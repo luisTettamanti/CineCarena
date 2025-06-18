@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>¿Borrar película "{{ pelicula.nombre }}"?</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <button class="boton" type="submit">Sí, borrar</button>
+    <a type="button" class="boton" href="{% url 'peliculaslista' %}">Cancelar</a>
+</form>
+
+{% endblock %}

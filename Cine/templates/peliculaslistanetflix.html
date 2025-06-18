@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Listado de películas</h1>
+<table border="1">
+    {% for peli in peliculas %}
+        <tr>
+            <td>{{ peli.id }}</td>
+            <td>{{ peli.ordenNetflix }}</td>
+            <td><a href="/peliculadatosnetflix/?id={{ peli.id}}">{{ peli.nombre }}</a></td>
+            <td>{{ peli.idDirector }}</td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}

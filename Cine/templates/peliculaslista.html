@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="tabla">
+    <h1>Listado de películas</h1>
+    <a class="boton" style="display: inline-block; margin-bottom: 10px;" href="{% url 'peliculaagregar' %}">Nueva...</a>
+    <table>
+        <tr>
+            <th>id</th>
+            <th>Netflix</th>
+            <th>nombre</th>
+            <th>director</th>
+            <th></th><th></th>
+        </tr>
+        {% for peli in peliculas %}
+            <tr>
+                <td>{{ peli.id }}</td>
+                <td>{{ peli.ordenNetflix }}</td>
+                <td><a href="{% url 'peliculaconsultar' peli.id %}">{{ peli.nombre }}</a></td>
+                <td>{{ peli.idDirector }}</td>
+                <td><a class="boton" href="{% url 'peliculamodificar' peli.id %}">Modificar</a></td>
+                <td><a class="boton" href="{% url 'peliculaborrar' peli.id %}">Borrar</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

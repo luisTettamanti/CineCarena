@@ -1,0 +1,23 @@
+# Ignorar entornos virtuales
+venv/
+env/
+
+# Ignorar archivos de caché y compilados de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignorar archivos de configuración y credenciales
+*.sqlite3
+*.log
+*.env
+
+# Ignorar archivos estáticos y media en producción
+media/
+staticfiles/
+
+# Ignorar archivos de dependencias de Node.js (si usas npm)
+node_modules/
+
+

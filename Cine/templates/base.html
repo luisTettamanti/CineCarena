@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block titulo %}Películas{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'estilos.css' %}">
+</head>
+<body>
+    <div class="contenedor">
+        <header></header>
+        <main>{% block content %}{% endblock %}</main>
+        <footer></footer>
+    </div>
+</body>
+</html>

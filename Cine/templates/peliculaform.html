@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div id="formulario">
+    <h1>Formulario de Película</h1>
+    <form method="post">
+
+        {% csrf_token %}
+
+        <label for="nombre">Nombre:</label><br>
+        <input type="text" name="nombre" id="nombre" value="{{ pelicula.nombre|default:'' }}"><br><br>
+
+        <label for="anio">Año:</label><br>
+        <input type="number" name="anio" id="anio" value="{{ pelicula.anio|default:'' }}"><br><br>
+
+        <label for="duracion">Duración (min):</label><br>
+        <input type="number" name="duracion" id="duracion" value="{{ pelicula.duracion|default:'' }}"><br><br>
+
+        <label for="idDirector">Director:</label><br>
+        <select id="idDirector" name="idDirector">
+            {% for director in directores %}
+                <option value="{{ director.id }}"
+                        {% if pelicula and director.id == pelicula.idDirector.id %}
+                        selected{% endif %}>{{ director.nombre }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="imdb">IMDB:</label><br>
+        <input type="number" name="imdb" id="imdb" value="{{ pelicula.imdb|default:'' }}"><br><br>
+
+        <label for="idCategoria">Categoria:</label><br>
+        <select id="idCategoria" name="idCategoria">
+            {% for categoria in categorias %}
+                <option value="{{ categoria.id }}" {% if pelicula and categoria.id == pelicula.idCategoria.id %}selected{% endif %}>{{ categoria.nombre }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="ordenNetflix">Orden Netflix:</label><br>
+        <input type="number" name="ordenNetflix" id="ordenNetflix" value="{{ pelicula.ordenNetflix|default:'' }}"><br><br>
+
+        <label for="caratula">Carátula:</label><br>
+        <input type="url" name="caratula" id="caratula" value="{{ pelicula.caratula|default:'' }}"><br><br>
+
+        <label for="resenia">Reseña:</label><br>
+        <textarea name="resenia" rows="10" cols="30" value="{{ pelicula.resenia|default:'' }}"></textarea>
+
+        <div class="botones">
+            <button type="submit" value="Enviar">Enviar</button>
+            <a class="boton-cancelar" href="{% url 'peliculaslista' %}">Cancelar</a>
+        </div>
+
+    </form>
+</div>
+{% endblock %}

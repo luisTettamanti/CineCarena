@@ -1,0 +1,123 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: bisque;
+}
+
+.contenedor {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header, footer {
+    background-color: olive;
+    height: 100px;
+}
+
+header {
+    margin-bottom: 20px;
+}
+
+footer {
+    margin-top: 20px;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+input[type=text], input[type=number], input[type=url], textarea, select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=submit] {
+    width: 50%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#formulario {
+    width: 600px;
+    margin: 0px auto 0px auto;
+    padding: 20px;
+    background-color: burlywood;
+}
+
+.tabla {
+    width: 900px;
+    margin: 0px auto 0px auto;
+    padding: 20px;
+}
+
+table {
+    width: 100%;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+}
+
+tr:nth-child(even) {
+    background-color: burlywood;
+}
+
+th {
+    background-color: black;
+    color: white;
+}
+
+.boton {
+    background-color: #005348;
+    color: white;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-family: sans-serif;
+    font-size: 12px;
+}
+
+.botones {
+    display: flex;
+    flex-direction: row; /* aseguramos horizontal */
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.botones button,
+.botones .boton-cancelar {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 20px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    text-align: center;
+    text-decoration: none;
+    background-color: #005348;
+    cursor: pointer;
+    box-sizing: border-box;
+    color: white;
+    font-family: sans-serif;
+    font-size: 12px;
+}

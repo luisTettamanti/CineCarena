@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cine Carena</title>
+</head>
+<body>
+    {% block content %}
+        <h1>Cine Carena</h1>
+        <h2>Bienvenido, {{ nombre }}</h2>
+        <h2>Fecha: {{ fecha_actual }}</h2>
+        <a href="{% url 'peliculaslista' %}">Películas</a>
+    {% endblock %}
+</body>
+</html>

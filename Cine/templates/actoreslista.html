@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Actores</title>
+</head>
+<body>
+    <h1>Listado de Actores</h1>
+    <table border="1">
+        {% for actor in actores %}
+            <tr>
+                <td>{{ actor.id }}</td>
+                <td><a href="{% url 'actordatos' actor.id %}">{{ actor.nombre }}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
