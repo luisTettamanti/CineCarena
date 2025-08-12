@@ -3,7 +3,7 @@
 {% block content %}
 
     <h1>Listado de películas</h1>
-    <a class="btn btn-primary" style="display: inline-block; margin-bottom: 10px;" href="{% url 'peliculaagregar' %}">Nueva...</a>
+    <a class="btn btn-primary" style="display: inline-block; margin-bottom: 10px;" href="{% url 'peliculaAgregarConForm' %}">Nueva...</a>
 
     <table class="table table-striped">
         <thead>
@@ -18,10 +18,10 @@
             <tr>
                 <td>{{ peli.id }}</td>
                 <td class="d-none d-sm-table-cell">{{ peli.ordenNetflix }}</td>
-                <td><a href="{% url 'peliculaconsultar' peli.id %}">{{ peli.nombre }}</a></td>
+                <td><a href="{% url 'peliculaDetalleConForm' peli.id %}">{{ peli.nombre }}</a></td>
                 <td class="d-none d-sm-table-cell">{{ peli.idDirector }}</td>
-                <td><a class="btn btn-primary" href="{% url 'peliculamodificar' peli.id %}">Modificar</a></td>
-                <td><a class="btn btn-primary" href="{% url 'peliculaborrar' peli.id %}">Borrar</a></td>
+                <td><a class="btn btn-primary" href="{% url 'peliculaModificarConForm' peli.id %}">Modificar</a></td>
+                <td><a class="btn btn-primary" href="{% url 'peliculaBorrarConForm' peli.id %}">Borrar</a></td>
             </tr>
         {% endfor %}
         </tbody>

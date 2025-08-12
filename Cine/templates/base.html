@@ -1,3 +1,7 @@
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,10 +11,15 @@
     <link rel="stylesheet" href="{% static 'estilos.css' %}">
 </head>
 <body>
-    <div class="contenedor">
+    <div class="container-fluid">
         <header></header>
-        <main>{% block content %}{% endblock %}</main>
+    </div>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    <div class="container-fluid">
         <footer></footer>
     </div>
+
 </body>
 </html>

@@ -18,4 +18,10 @@ urlpatterns = [
     path('peliculaform/<int:pk>/', views.peliculaForm, name='peliculamodificar'),
     path('peliculaborrar/<int:pk>/', views.peliculaBorrar, name='peliculaborrar'),
     path('peliculaconsultar/<int:pk>/', views.peliculaConsultar, name='peliculaconsultar'),
+
+    path('peliculaslistaConForm/', views.peliculasListaConForm.as_view(), name='peliculasListaConForm'),
+    path('peliculaAgregarConForm/', views.peliculaConFormAgregar.as_view(), name='peliculaAgregarConForm'),
+    path('peliculaModificarConForm/<int:pk>/', views.peliculaConFormModificar.as_view(), name='peliculaModificarConForm'),
+    path('peliculaBorrarConForm/<int:pk>/', views.peliculaConFormBorrar.as_view(), name='peliculaBorrarConForm'),
+    path('peliculaDetalleConForm/<int:pk>/', views.peliculaConFormDetalle.as_view(), name='peliculaDetalleConForm'),
     ]

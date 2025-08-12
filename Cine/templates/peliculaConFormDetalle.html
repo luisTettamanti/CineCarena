@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>{{ pelicula.nombre }}</h1>
+    <b>Año: </b>{{ pelicula.anio }}<br>
+    <b>Duración: </b>{{ pelicula.duracion }} minutos<br>
+    <b>Categoría: </b>{{ pelicula.idCategoria }}<br>
+    <b>Director: </b>{{ pelicula.idDirector }}<br>
+    <b>Protagonistas: </b>
+    {% for actorpelicula in pelicula.actores.all %}
+        {{ actorpelicula.nombre }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+    <div style="width: 200px; height: 300px; margin-top: 10px; background-size: contain; background-repeat: no-repeat; background-image: url({{ pelicula.caratula }})"></div>
+    <a href="{% url 'peliculasListaConForm' %}">Volver a la lista</a>
+{% endblock %}

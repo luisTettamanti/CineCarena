@@ -1,14 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Listado de películas</h1>
-<table border="1">
+
+<table class="table table-striped">
+    <thead>
+        <th>id</th>
+        <th>orden</th>
+        <th>película</th>
+        <th>director</th>
+    </thead>
+    <tbody>
     {% for peli in peliculas %}
-        <tr>
+         <tr>
             <td>{{ peli.id }}</td>
             <td>{{ peli.ordenNetflix }}</td>
             <td><a href="/peliculadatosnetflix/?id={{ peli.id}}">{{ peli.nombre }}</a></td>
             <td>{{ peli.idDirector }}</td>
         </tr>
     {% endfor %}
+    </tbody>
 </table>
+
 {% endblock %}

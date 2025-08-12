@@ -2,7 +2,10 @@ from cgitb import reset
 from datetime import datetime
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
+from AppCine.forms import PeliculaForm
 from AppCine.models import Pelicula, Actor, Director, Categoria
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
 
 # def index(request):
@@ -12,7 +15,8 @@ from AppCine.models import Pelicula, Actor, Director, Categoria
 
 
 def index(request):
-    contexto = {'fecha_actual': datetime.now(), 'nombre': 'Luis'}
+    peliculas = Pelicula.objects.filter(ordenNetflix__isnull=False)
+    contexto = {'fecha_actual': datetime.now(), 'nombre': 'Luis', 'peliculas': peliculas}
     return render(request, 'index.html', contexto)
 
 
@@ -124,3 +128,35 @@ def peliculasLista(request):
     peliculas = Pelicula.objects.all()
     context = {"peliculas": peliculas}
     return render(request, "peliculaslista.html", context)
+
+
+class peliculasListaConForm(ListView):
+    model = Pelicula
+    template_name = 'peliculasListaConForm.html'
+    context_object_name = 'peliculas'
+
+
+class peliculaConFormAgregar(CreateView):
+    model = Pelicula
+    form_class = PeliculaForm
+    template_name = 'peliculaConForm.html'
+    success_url = reverse_lazy('peliculasListaConForm')
+
+
+class peliculaConFormModificar(UpdateView):
+    model = Pelicula
+    form_class = PeliculaForm
+    template_name = 'peliculaConForm.html'
+    success_url = reverse_lazy('peliculasListaConForm')
+
+
+class peliculaConFormBorrar(DeleteView):
+    model = Pelicula
+    template_name = 'peliculaConFormBorrar.html'
+    success_url = reverse_lazy('peliculasListaConForm')
+
+
+class peliculaConFormDetalle(DetailView):
+    model = Pelicula
+    template_name = 'peliculaConFormDetalle.html'
+    context_object_name = 'pelicula'

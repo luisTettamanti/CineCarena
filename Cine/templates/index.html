@@ -10,6 +10,14 @@
         <h1>Cine Carena</h1>
         <h2>Bienvenido, {{ nombre }}</h2>
         <h2>Fecha: {{ fecha_actual }}</h2>
+        <div id="galeria">
+            {% for peli in peliculas %}
+              <a href="{% url 'peliculaconsultar' peli.id %}">
+                    <div class="pelimagen" style="background-image: url({{ peli.caratula }}); background-size: cover; background-position: center;">
+                    </div>
+              </a>
+            {% endfor %}
+        </div>
         <a href="{% url 'peliculaslista' %}">Películas</a>
     {% endblock %}
 </body>
