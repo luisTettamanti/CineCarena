@@ -24,14 +24,14 @@ class Actor(models.Model):
 
 class Pelicula(models.Model):
     nombre = models.CharField(max_length=50)
-    anio = models.IntegerField()
-    duracion = models.IntegerField()
-    idDirector = models.ForeignKey(Director, on_delete=models.CASCADE)
-    imdb = models.IntegerField(blank=True, null=True)
-    idCategoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-    ordenNetflix = models.IntegerField(blank=True, null=True)
-    caratula = models.URLField(blank=True, null=True)
-    resenia = models.TextField(blank=True, null=True)
+    anio = models.IntegerField(verbose_name='año')
+    duracion = models.IntegerField(verbose_name='duración')
+    idDirector = models.ForeignKey(Director, on_delete=models.CASCADE, verbose_name="director")
+    imdb = models.IntegerField(blank=True, null=True, help_text="Puntaje en IMDB")
+    idCategoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, verbose_name="categoría")
+    ordenNetflix = models.IntegerField(blank=True, null=True, help_text="Ranking en Netflix")
+    caratula = models.URLField(blank=True, null=True, verbose_name="carátula")
+    resenia = models.TextField(blank=True, null=True, verbose_name="reseña")
     actores = models.ManyToManyField(Actor, through='ActorPelicula', related_name='peliculas')
 
     def __str__(self):

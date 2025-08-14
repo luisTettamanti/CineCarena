@@ -139,14 +139,14 @@ class peliculasListaConForm(ListView):
 class peliculaConFormAgregar(CreateView):
     model = Pelicula
     form_class = PeliculaForm
-    template_name = 'peliculaConForm.html'
+    template_name = 'peliculaConForm2.html'
     success_url = reverse_lazy('peliculasListaConForm')
 
 
 class peliculaConFormModificar(UpdateView):
     model = Pelicula
     form_class = PeliculaForm
-    template_name = 'peliculaConForm.html'
+    template_name = 'peliculaConForm2.html'
     success_url = reverse_lazy('peliculasListaConForm')
 
 
