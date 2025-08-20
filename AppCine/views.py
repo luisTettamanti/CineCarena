@@ -3,9 +3,13 @@ from datetime import datetime
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from AppCine.forms import PeliculaForm
+from AppCine.forms import PeliculaForm, ActorPeliculaFormSet
 from AppCine.models import Pelicula, Actor, Director, Categoria
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.db import transaction
+import logging
+
+log = logging.getLogger(__name__)
 
 
 # def index(request):
@@ -159,4 +163,85 @@ class peliculaConFormBorrar(DeleteView):
 class peliculaConFormDetalle(DetailView):
     model = Pelicula
     template_name = 'peliculaConFormDetalle.html'
+    context_object_name = 'pelicula'
+
+
+class Peliculaslista(ListView):
+    model = Pelicula
+    template_name = 'peliculaslista.html'
+    context_object_name = 'peliculas'
+
+
+class PeliculaCreateView(CreateView):
+    model = Pelicula
+    form_class = PeliculaForm
+    template_name = 'peliculaForm.html'
+    success_url = reverse_lazy('peliculaslista')
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data['actores'] = ActorPeliculaFormSet(self.request.POST)
+        else:
+            data['actores'] = ActorPeliculaFormSet()
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        actores = context['actores']
+
+        if form.is_valid() and actores.is_valid():
+            self.object = form.save()
+
+            actores.instance = self.object
+            actores.save()
+
+            return redirect(self.success_url)
+        else:
+            return self.form_invalid(form)
+
+
+class PeliculaUpdateView(UpdateView):
+    model = Pelicula
+    form_class = PeliculaForm
+    template_name = 'peliculaForm.html'
+    success_url = reverse_lazy('peliculaslista')
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data['actores'] = ActorPeliculaFormSet(self.request.POST, instance=self.object)
+        else:
+            data['actores'] = ActorPeliculaFormSet(instance=self.object)
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        actores = context['actores']
+
+        try:
+            if form.is_valid() and actores.is_valid():
+                self.object = form.save()
+
+                actores.instance = self.object
+                actores.save()
+
+                return redirect(self.success_url)
+            else:
+                return self.form_invalid(form)
+
+        except Exception as e:
+            print(f"Ocurrió un error: {e}")
+            return self.form_invalid(form)
+
+
+class PeliculaDeleteView(DeleteView):
+    model = Pelicula
+    template_name = 'peliculaConFormBorrar.html'
+    success_url = reverse_lazy('peliculaslista')
+
+
+class peliculaDetailView(DetailView):
+    model = Pelicula
+    template_name = 'peliculaDetail.html'
     context_object_name = 'pelicula'

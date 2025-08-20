@@ -41,3 +41,6 @@ class Pelicula(models.Model):
 class ActorPelicula(models.Model):
     idActor = models.ForeignKey(Actor, on_delete=models.CASCADE)
     idPelicula = models.ForeignKey(Pelicula, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('idActor', 'idPelicula')  # evita el mismo actor repetido en la misma película

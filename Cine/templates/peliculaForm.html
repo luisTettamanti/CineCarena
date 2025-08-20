@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div id="contenido" class="container">
+    <h2 class="titulo pb-3">Película</h2>
+
+    <form method="post" action="">
+        {% csrf_token %}
+
+        <!-- Película -->
+        {{ form.non_field_errors }}
+        {{ form.as_p }}
+
+        <h3 class="titulo">Actores</h3>
+        {{ actores.management_form }}
+        <table class="table table-striped">
+            {% for form in actores %}
+                <tr>
+                    <td style="display:none;">{{ form.id }}</td>
+                    <td>{{ form.idActor }}</td>
+                    <td>{{ form.DELETE }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a class="btn btn-primary" href="{% url 'peliculaslista' %}">Cancelar</a>
+    </form>
+
+</div>
+
+{% endblock %}
