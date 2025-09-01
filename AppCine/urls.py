@@ -28,6 +28,8 @@ urlpatterns = [
     path('peliculaUpdate/<int:pk>/', views.PeliculaUpdateView.as_view(),
          name='peliculaupdate'),
     path('peliculaDelete/<int:pk>/', views.PeliculaDeleteView.as_view(), name='peliculadelete'),
-    path('peliculaDetail/<int:pk>/', views.peliculaDetailView.as_view(), name='peliculadetail'),
+    path('peliculaDetail/<int:pk>/', views.PeliculaDetailView.as_view(), name='peliculadetail'),
+    path('peliculaDetailoc/<int:pk>/', views.PeliculaDetailViewOC.as_view(), name='peliculadetailoc'),
+    path('peliculasListaoc/', views.Peliculaslista.as_view(), name='peliculaslistaoc'),
 
     ]

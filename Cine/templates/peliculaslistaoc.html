@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+    <div class="d-flex align-items-center justify-content-between">
+        <div id="titulo">Películas</div>
+        <a class="btn btn-primary" href="{% url 'peliculacreate' %}">Nueva...</a>
+    </div>
+
+    <table id="tablaPelis" class="table table-striped table-hover">
+        <thead>
+            <th class="d-none d-sm-table-cell">id</th>
+            <th class="d-none d-sm-table-cell">Netflix</th>
+            <th>nombre</th>
+            <th class="d-none d-md-table-cell">director</th>
+            <th></th>
+        </thead>
+        <tbody>
+        {% for peli in peliculas %}
+            <tr
+{#              style="cursor:pointer;"#}
+{#              data-bs-toggle="offcanvas"#}
+{#              data-bs-target="#peliculaOffcanvas"#}
+{#              aria-controls="peliculaOffcanvas"#}
+{#              hx-get="{% url 'peliculadetailoc' peli.id %}"#}
+{#              hx-target="#offcanvasBody"#}
+{#              hx-swap="innerHTML"#}
+{#              hx-trigger="click"#}
+            >
+                <td class="align-middle d-none d-sm-table-cell"
+                    style="cursor:pointer"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#peliculaOffcanvas"
+                    aria-controls="peliculaOffcanvas"
+                    hx-get="{% url 'peliculadetailoc' peli.id %}"
+                    hx-target="#offcanvasBody"
+                    hx-swap="innerHTML"
+                >{{ peli.id }}</td>
+                <td class="align-middle d-none d-sm-table-cell"
+                    style="cursor:pointer"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#peliculaOffcanvas"
+                    aria-controls="peliculaOffcanvas"
+                    hx-get="{% url 'peliculadetailoc' peli.id %}"
+                    hx-target="#offcanvasBody"
+                    hx-swap="innerHTML"
+                >{{ peli.ordenNetflix }}</td>
+                <td class="align-middle"
+                    style="cursor:pointer"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#peliculaOffcanvas"
+                    aria-controls="peliculaOffcanvas"
+                    hx-get="{% url 'peliculadetailoc' peli.id %}"
+                    hx-target="#offcanvasBody"
+                    hx-swap="innerHTML">{{ peli.nombre }}</td>
+                <td class="align-middle d-none d-md-table-cell"
+                    style="cursor:pointer"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#peliculaOffcanvas"
+                    aria-controls="peliculaOffcanvas"
+                    hx-get="{% url 'peliculadetailoc' peli.id %}"
+                    hx-target="#offcanvasBody"
+                    hx-swap="innerHTML"
+                >{{ peli.idDirector }}</td>
+                <td style="width:1%; white-space:nowrap;">
+                    <div class="d-flex justify-content-end align-items-end">
+                        <a class="btn btn-primary me-2" href="{% url 'peliculaupdate' peli.id %}">Modificar</a>
+                        <a class="btn btn-primary" href="{% url 'peliculaBorrarConForm' peli.id %}">Borrar</a>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+<!-- Offcanvas a la derecha -->
+<div class="offcanvas offcanvas-end bg-dark text-white"
+     id="peliculaOffcanvas"
+     tabindex="-1"
+     aria-labelledby="peliculaOffcanvasLabel"
+     style="--bs-offcanvas-width: 380px;">
+
+    <div class="offcanvas-header">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body" id="offcanvasBody">
+        <!-- HTMX inyecta acá el parcial -->
+    </div>
+</div>
+
+{% endblock %}
+
+{#{% block script %}#}
+{##}
+{#<script>#}
+{#  // Construye el prefijo a partir de la URL de Django con un id "dummy"#}
+{#  // Ej.: si tu URL es /peliculadetail/123/ => prefijo /peliculadetail/#}
+{#  const detailPrefix = "{% url '_peliculadetailoc' 0 %}".replace(/0\/?$/, "");#}
+{##}
+{#  function openOffcanvasFromURLIfNeeded() {#}
+{#    if (location.pathname.startsWith(detailPrefix)) {#}
+{#      // Carga el parcial vía HTMX y abre el offcanvas#}
+{#      htmx.ajax('GET', location.pathname, {target:'#offcanvasBody', swap:'innerHTML'})#}
+{#        .then(() => bootstrap.Offcanvas.getOrCreateInstance('#peliculaOffcanvas').show());#}
+{#    }#}
+{#  }#}
+{# // Al cargar la página (por si llegás directo a /.../<id>/)#}
+{#  document.addEventListener("DOMContentLoaded", openOffcanvasFromURLIfNeeded);#}
+{#  // Y cuando volvés/avanzás en el historial#}
+{#  window.addEventListener("popstate", openOffcanvasFromURLIfNeeded);#}
+{#</script>#}
+{##}
+{#{% endblock %}#}

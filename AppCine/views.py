@@ -168,7 +168,7 @@ class peliculaConFormDetalle(DetailView):
 
 class Peliculaslista(ListView):
     model = Pelicula
-    template_name = 'peliculaslista.html'
+    template_name = 'peliculaslistaoc.html'
     context_object_name = 'peliculas'
 
 
@@ -176,7 +176,7 @@ class PeliculaCreateView(CreateView):
     model = Pelicula
     form_class = PeliculaForm
     template_name = 'peliculaForm.html'
-    success_url = reverse_lazy('peliculaslista')
+    success_url = reverse_lazy('peliculaslistaoc')
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -205,7 +205,7 @@ class PeliculaUpdateView(UpdateView):
     model = Pelicula
     form_class = PeliculaForm
     template_name = 'peliculaForm.html'
-    success_url = reverse_lazy('peliculaslista')
+    success_url = reverse_lazy('peliculaslistaoc')
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -238,10 +238,20 @@ class PeliculaUpdateView(UpdateView):
 class PeliculaDeleteView(DeleteView):
     model = Pelicula
     template_name = 'peliculaConFormBorrar.html'
-    success_url = reverse_lazy('peliculaslista')
+    success_url = reverse_lazy('peliculaslistaoc')
 
 
-class peliculaDetailView(DetailView):
+class PeliculaDetailView(DetailView):
     model = Pelicula
     template_name = 'peliculaDetail.html'
     context_object_name = 'pelicula'
+
+
+class PeliculaDetailViewOC(DetailView):
+    model = Pelicula
+    template_name = "peliculaDetail.html"  # página completa
+
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.headers.get("HX-Request"):
+            return render(self.request, "_peliculaDetail.html", context, **response_kwargs)
+        return super().render_to_response(context, **response_kwargs)

@@ -32,6 +32,32 @@ main {
     flex: 1 0 auto;
 }
 
+#titulo {
+    font-family: "Truculenta", sans-serif;
+    font-weight: 900;
+    font-size: 50px;
+}
+
+.tituloficha {
+    font-family: "Truculenta", sans-serif;
+    color: bisque;
+    font-weight: 400;
+    font-size: 40px;
+}
+
+/* Oculta scrollbar en Firefox y Edge/IE */
+#peliculaOffcanvas .offcanvas-body{
+    overflow-y: auto;        /* o 'scroll', como prefieras */
+    scrollbar-width: none;   /* Firefox */
+    -ms-overflow-style: none;/* Edge/IE */
+}
+
+/* Oculta scrollbar en Chrome/Safari/Opera */
+#peliculaOffcanvas .offcanvas-body::-webkit-scrollbar{
+    width: 0;
+    height: 0;
+}
+
 /*input[type=text], input[type=number], input[type=url], textarea, select {*/
 /*    width: 100%;*/
 /*    padding: 12px 20px;*/

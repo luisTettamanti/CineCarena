@@ -1,15 +1,21 @@
-{% load bootstrap5 %}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Truculenta:opsz,wght@12..72,100..900&display=swap" rel="stylesheet">    <link rel="stylesheet" href="{% static 'estilos.css' %}">
+
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     <title>{% block titulo %}Películas{% endblock %}</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'estilos.css' %}">
 </head>
+
 <body>
     <div class="container-fluid">
         <header></header>

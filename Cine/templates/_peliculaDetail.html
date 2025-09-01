@@ -1,0 +1,14 @@
+<div class="card bg-dark text-light" style="max-width: fit-content; margin: auto;">
+    <img class="card-img-top" src="{{ pelicula.caratula }}" alt="Card image">
+    <div class="card-body">
+        <h4 class="card-title tituloficha">{{ pelicula.nombre }}</h4>
+        <b>Año: </b>{{ pelicula.anio }}<br>
+        <b>Duración: </b>{{ pelicula.duracion }} minutos<br>
+        <b>Categoría: </b>{{ pelicula.idCategoria }}<br>
+        <b>Director: </b>{{ pelicula.idDirector }}<br>
+        <b>Protagonistas: </b><p>
+        {% for actorpelicula in pelicula.actores.all %}
+            {{ actorpelicula.nombre }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}</p>
+    </div>
+</div>
