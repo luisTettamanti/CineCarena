@@ -8,6 +8,9 @@ from AppCine.models import Pelicula, Actor, Director, Categoria
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.db import transaction
 import logging
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+import json
 
 log = logging.getLogger(__name__)
 
@@ -172,67 +175,201 @@ class Peliculaslista(ListView):
     context_object_name = 'peliculas'
 
 
+# class PeliculaCreateView(CreateView):
+#     model = Pelicula
+#     form_class = PeliculaForm
+#     template_name = 'peliculaForm.html'
+#     success_url = reverse_lazy('peliculaslistaoc')
+#
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         if self.request.POST:
+#             data['actores'] = ActorPeliculaFormSet(self.request.POST)
+#         else:
+#             data['actores'] = ActorPeliculaFormSet()
+#         return data
+#
+#     def form_valid(self, form):
+#         context = self.get_context_data()
+#         actores = context['actores']
+#
+#         if form.is_valid() and actores.is_valid():
+#             self.object = form.save()
+#
+#             actores.instance = self.object
+#             actores.save()
+#
+#             return redirect(self.success_url)
+#         else:
+#             return self.form_invalid(form)
+
+
+# class PeliculaUpdateView(UpdateView):
+#     model = Pelicula
+#     form_class = PeliculaForm
+#     template_name = 'peliculaForm.html'
+#     success_url = reverse_lazy('peliculaslistaoc')
+#
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         if self.request.POST:
+#             data['actores'] = ActorPeliculaFormSet(self.request.POST, instance=self.object)
+#         else:
+#             data['actores'] = ActorPeliculaFormSet(instance=self.object)
+#         return data
+#
+#     def form_valid(self, form):
+#         context = self.get_context_data()
+#         actores = context['actores']
+#
+#         try:
+#             if form.is_valid() and actores.is_valid():
+#                 self.object = form.save()
+#
+#                 actores.instance = self.object
+#                 actores.save()
+#
+#                 return redirect(self.success_url)
+#             else:
+#                 return self.form_invalid(form)
+#
+#         except Exception as e:
+#             print(f"Ocurrió un error: {e}")
+#             return self.form_invalid(form)
+
+
 class PeliculaCreateView(CreateView):
     model = Pelicula
     form_class = PeliculaForm
-    template_name = 'peliculaForm.html'
-    success_url = reverse_lazy('peliculaslistaoc')
+    template_name = "peliculaForm.html"   # fallback página completa
+    formset_prefix = "actores"
 
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.request.POST:
-            data['actores'] = ActorPeliculaFormSet(self.request.POST)
-        else:
-            data['actores'] = ActorPeliculaFormSet()
-        return data
+    def get(self, request, *args, **kwargs):
+        self.object = None
+        form = self.get_form()
+        actores = ActorPeliculaFormSet(instance=None, prefix=self.formset_prefix)
+        ctx = {"form": form, "actores": actores}
+        if is_htmx(request):
+            return render(request, "_peliculaForm.html", ctx)  # parcial offcanvas
+        return render(request, self.template_name, ctx)
 
-    def form_valid(self, form):
-        context = self.get_context_data()
-        actores = context['actores']
-
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        form = self.get_form()
+        actores = ActorPeliculaFormSet(request.POST, instance=None, prefix=self.formset_prefix)
         if form.is_valid() and actores.is_valid():
-            self.object = form.save()
+            with transaction.atomic():
+                self.object = form.save()              # ahora tenemos pk
+                actores.instance = self.object
+                actores.save()
+            if is_htmx(request):
+                return HttpResponse(status=204)        # el <form> cierra y refresca
+            return redirect(self.get_success_url())
+        status = 422
+        tpl = "_peliculaForm.html" if is_htmx(request) else self.template_name
+        return render(request, tpl, {"form": form, "actores": actores}, status=status)
 
-            actores.instance = self.object
-            actores.save()
 
-            return redirect(self.success_url)
-        else:
-            return self.form_invalid(form)
+# class PeliculaUpdateView(UpdateView):
+#     model = Pelicula
+#     form_class = PeliculaForm
+#     template_name = 'peliculaForm.html'
+#
+#     def get(self, request, *args, **kwargs):
+#         self.object = self.get_object()
+#         form = self.get_form()
+#         if is_htmx(request):
+#             return render(request, '_peliculaForm.html', {'form': form})
+#         return render(request, self.template_name, {'form': form})
+#
+#     def form_valid(self, form):
+#         self.object = form.save()
+#         if is_htmx(self.request):
+#             return HttpResponse(status=204)
+#         return super().form_valid(form)
+#
+#     def form_invalid(self, form):
+#         if is_htmx(self.request):
+#             return render(self.request, '_peliculaForm.html', {'form': form}, status=422)
+#         return render(self.request, self.template_name, {'form': form}, status=422)
+
+
+def is_htmx(request):
+    return request.headers.get('HX-Request') == 'true'
 
 
 class PeliculaUpdateView(UpdateView):
     model = Pelicula
     form_class = PeliculaForm
-    template_name = 'peliculaForm.html'
-    success_url = reverse_lazy('peliculaslistaoc')
+    template_name = "peliculaForm.html"               # página completa (fallback)
+    success_url = reverse_lazy("peliculaslistaoc")
+    formset_prefix = "actores"
 
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.request.POST:
-            data['actores'] = ActorPeliculaFormSet(self.request.POST, instance=self.object)
-        else:
-            data['actores'] = ActorPeliculaFormSet(instance=self.object)
-        return data
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        actores = ActorPeliculaFormSet(instance=self.object, prefix=self.formset_prefix)
+        if is_htmx(request):
+            return render(request, "_peliculaForm.html", {"form": form, "actores": actores})
+        return render(request, self.template_name, {"form": form, "actores": actores})
 
-    def form_valid(self, form):
-        context = self.get_context_data()
-        actores = context['actores']
-
-        try:
-            if form.is_valid() and actores.is_valid():
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        actores = ActorPeliculaFormSet(request.POST, instance=self.object, prefix=self.formset_prefix)
+        if form.is_valid() and actores.is_valid():
+            with transaction.atomic():
                 self.object = form.save()
-
                 actores.instance = self.object
                 actores.save()
+            if is_htmx(request):
+                return HttpResponse(status=204)  # el <form> cerrará y refrescará el tbody
+            return redirect(self.get_success_url())
+        # inválido
+        status = 422
+        tpl = "_peliculaForm.html" if is_htmx(request) else self.template_name
+        return render(request, tpl, {"form": form, "actores": actores}, status=status)
 
-                return redirect(self.success_url)
-            else:
-                return self.form_invalid(form)
 
-        except Exception as e:
-            print(f"Ocurrió un error: {e}")
-            return self.form_invalid(form)
+def PeliculaActorAddForm(request, pk):
+    if request.method != "POST" or request.headers.get("HX-Request") != "true":
+        return HttpResponseBadRequest("HTMX POST requerido.")
+
+    peli = get_object_or_404(Pelicula, pk=pk)
+    prefix = "actores"
+    fs = ActorPeliculaFormSet(request.POST, instance=peli, prefix=prefix)
+
+    new_index = fs.total_form_count()
+    empty = fs.empty_form
+    empty.prefix = f"{prefix}-{new_index}"
+
+    row_html = render_to_string("_actorFormRow.html", {"f": empty})
+    mgmt_html = render_to_string("_formsetTotalOOB.html", {
+        "prefix": prefix,
+        "new_total": new_index + 1
+    })
+    # (opcional) quitar placeholder "Sin actores"
+    remove_empty_html = '<tr id="sinActoresRow" hx-swap-oob="true" style="display:none"></tr>'
+
+    return HttpResponse(row_html + mgmt_html + remove_empty_html)
+
+
+def PeliculaActorAddFormNew(request):  # CREAR (sin pk)
+    if request.method != "POST" or not is_htmx(request):
+        return HttpResponseBadRequest("HTMX POST requerido.")
+    prefix = "actores"
+    fs = ActorPeliculaFormSet(request.POST, instance=None, prefix=prefix)
+    new_index = fs.total_form_count()
+    empty = fs.empty_form
+    empty.prefix = f"{prefix}-{new_index}"
+    row_html = render_to_string("_actorFormRow.html", {"f": empty})
+    mgmt_html = render_to_string("_formsetTotalOOB.html", {"prefix": prefix, "new_total": new_index + 1})
+    return HttpResponse(row_html + mgmt_html)
+
+
+def PeliculasTbody(request):
+    peliculas = Pelicula.objects.all().select_related('idDirector')  # ordená como uses
+    return render(request, '_peliculasTbody.html', {'peliculas': peliculas})
 
 
 class PeliculaDeleteView(DeleteView):

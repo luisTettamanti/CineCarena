@@ -1,0 +1,59 @@
+<tbody id="tbodyPelis"
+       hx-get="{% url 'peliculastbody' %}"
+       hx-trigger="refresh"
+       hx-swap="outerHTML">
+    {% for peli in peliculas %}
+        <tr>
+            <td class="align-middle d-none d-sm-table-cell"
+                style="cursor:pointer"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#peliculaOffcanvas"
+                aria-controls="peliculaOffcanvas"
+                hx-get="{% url 'peliculadetailoc' peli.id %}"
+                hx-target="#offcanvasBody"
+                hx-swap="innerHTML"
+            >{{ peli.id }}</td>
+            <td class="align-middle d-none d-sm-table-cell"
+                style="cursor:pointer"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#peliculaOffcanvas"
+                aria-controls="peliculaOffcanvas"
+                hx-get="{% url 'peliculadetailoc' peli.id %}"
+                hx-target="#offcanvasBody"
+                hx-swap="innerHTML"
+            >{{ peli.ordenNetflix }}</td>
+            <td class="align-middle"
+                style="cursor:pointer"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#peliculaOffcanvas"
+                aria-controls="peliculaOffcanvas"
+                hx-get="{% url 'peliculadetailoc' peli.id %}"
+                hx-target="#offcanvasBody"
+                hx-swap="innerHTML">{{ peli.nombre }}</td>
+            <td class="align-middle d-none d-md-table-cell"
+                style="cursor:pointer"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#peliculaOffcanvas"
+                aria-controls="peliculaOffcanvas"
+                hx-get="{% url 'peliculadetailoc' peli.id %}"
+                hx-target="#offcanvasBody"
+                hx-swap="innerHTML"
+            >{{ peli.idDirector }}</td>
+            <td style="width:1%; white-space:nowrap;">
+                <div class="d-flex justify-content-end align-items-end">
+{#                        <a class="btn btn-primary me-2" href="{% url 'peliculaupdate' peli.id %}">Modificar</a>#}
+                    <a class="btn btn-primary me-2"
+                        href="{% url 'peliculaupdate' peli.id %}"
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#peliculaOffcanvas"
+                        hx-get="{% url 'peliculaupdate' peli.id %}"
+                        hx-target="#offcanvasBody"
+                        hx-swap="innerHTML">
+                        Modificar
+                    </a>
+                    <a class="btn btn-primary" href="{% url 'peliculaBorrarConForm' peli.id %}">Borrar</a>
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+</tbody>

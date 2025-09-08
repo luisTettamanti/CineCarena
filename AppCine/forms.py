@@ -25,6 +25,6 @@ ActorPeliculaFormSet = inlineformset_factory(Pelicula, ActorPelicula,
         'id': forms.TextInput(attrs={'class': 'form-control'}),
         'idActor': forms.Select(attrs={'class': 'form-select'}),
     },
-    extra=3,           # cantidad de formularios en blanco
+    extra=0,           # cantidad de formularios en blanco
     can_delete=True    # permitir quitar actores de la película
 )

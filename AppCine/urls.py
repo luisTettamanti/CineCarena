@@ -31,5 +31,8 @@ urlpatterns = [
     path('peliculaDetail/<int:pk>/', views.PeliculaDetailView.as_view(), name='peliculadetail'),
     path('peliculaDetailoc/<int:pk>/', views.PeliculaDetailViewOC.as_view(), name='peliculadetailoc'),
     path('peliculasListaoc/', views.Peliculaslista.as_view(), name='peliculaslistaoc'),
+    path("peliculas/tbody/", views.PeliculasTbody, name="peliculastbody"),
+    path("peliculas/<int:pk>/actoradd/", views.PeliculaActorAddForm, name="peliculaactoraddform"),
+    path("peliculas/actoraddnew/", views.PeliculaActorAddFormNew, name="peliculaactoraddformnew"),
 
     ]
