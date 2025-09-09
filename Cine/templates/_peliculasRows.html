@@ -1,0 +1,19 @@
+{% if peliculas %}
+  {% for p in peliculas %}
+    <tr>
+      <td><strong>{{ p.nombre }}</strong></td>
+      <td>{{ p.idDirector }}</td>
+      <td>{{ p.idCategoria }}</td>
+      <td class="text-nowrap">
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'peliculadetailoc' p.pk %}">Ver</a>
+      </td>
+    </tr>
+  {% endfor %}
+{% else %}
+  <tr><td colspan="4" class="text-center text-muted">Sin resultados</td></tr>
+{% endif %}
+
+{# 👉 Actualizamos la paginación en paralelo (OOB) #}
+{#<div id="pager" hx-swap-oob="true">#}
+{#  {% include "partials/_peliculas_pager.html" %}#}
+{#</div>#}

@@ -1,0 +1,53 @@
+{# templates/peliculaslistaoc.html #}
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container py-3">
+  <div class="row mb-2">
+    <div class="col-12 col-md-8 mx-auto">
+      <form id="live-search"
+        hx-on:htmx:beforeRequest="console.log('q=', event.detail.parameters.q)"
+        hx-on:keydown.enter="event.preventDefault()">
+        <input
+          id="q"
+          type="search"
+          name="q"
+          class="form-control"
+          value="{{ query }}"
+          placeholder="Buscar película o director…"
+          hx-get="{% url 'peliculaslistahtmx' %}"
+          hx-trigger="input changed delay:300ms, keyup delay:300ms, search"
+          hx-target="#pelis-rows"
+          hx-swap="innerHTML"
+          hx-push-url="true"
+          hx-indicator="#spinner"
+          hx-include="#live-search">
+      </form>
+
+      <div id="spinner" class="htmx-indicator mt-2">
+        <div class="spinner-border spinner-border-sm" role="status"></div>
+        <span class="ms-2">Buscando…</span>
+      </div>
+    </div>
+  </div>
+
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Título</th>
+        <th>Director</th>
+        <th>Categoría</th>
+        <th style="width:1%"></th>
+      </tr>
+    </thead>
+    <tbody id="pelis-rows">
+      {% include "_peliculasRows.html" %}
+    </tbody>
+  </table>
+
+{#  <div id="pager">#}
+{#    {% include "partials/_peliculas_pager.html" %}#}
+{#  </div>#}
+</div>
+
+{% endblock %}

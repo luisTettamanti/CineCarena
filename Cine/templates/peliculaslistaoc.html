@@ -4,6 +4,19 @@
 
     <div class="d-flex align-items-center justify-content-between">
         <div id="titulo">Películas</div>
+
+            <form method="GET">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="q" value="{{ query }}" \
+                        placeholder="Buscar...">
+                    <button class="btn btn-primary text-light" type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+
         <a class="btn btn-primary"
             href="{% url 'peliculacreate' %}"
             data-bs-toggle="offcanvas"
@@ -76,7 +89,16 @@
                             hx-swap="innerHTML">
                             Modificar
                         </a>
-                        <a class="btn btn-primary" href="{% url 'peliculaBorrarConForm' peli.id %}">Borrar</a>
+                        <a class="btn btn-danger"
+                            href="{% url 'peliculadelete' peli.id %}"           {# fallback #}
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#peliculaOffcanvas"
+                            hx-get="{% url 'peliculadelete' peli.id %}"
+                            hx-target="#offcanvasBody"
+                            hx-swap="innerHTML">
+                            Borrar
+                        </a>
+{#                        <a class="btn btn-primary" href="{% url 'peliculaBorrarConForm' peli.id %}">Borrar</a>#}
                     </div>
                 </td>
             </tr>

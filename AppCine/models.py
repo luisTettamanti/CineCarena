@@ -17,6 +17,8 @@ class Categoria(models.Model):
 
 class Actor(models.Model):
     nombre = models.CharField(max_length=50)
+    fechaNac = models.DateField(blank=True, null=True, verbose_name="Fecha de Nacimiento")
+    origen = models.CharField(max_length=50, blank=True, null=True, verbose_name="País de Origen")
 
     def __str__(self):
         return self.nombre

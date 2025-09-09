@@ -10,6 +10,7 @@ from django.db import transaction
 import logging
 from django.http import HttpResponse
 from django.template.loader import render_to_string
+from django.db.models import Q
 import json
 
 log = logging.getLogger(__name__)
@@ -174,6 +175,45 @@ class Peliculaslista(ListView):
     template_name = 'peliculaslistaoc.html'
     context_object_name = 'peliculas'
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(Q(nombre__icontains=query))
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')  # Enviar el valor de la búsqueda al contexto
+        return context
+
+
+def is_htmx(request):
+    return request.headers.get("HX-Request") == "true"
+
+
+class PeliculaslistaHTMX(ListView):
+    model = Pelicula
+    template_name = 'peliculaslistaHTMX.html'
+    context_object_name = 'peliculas'
+
+    def get_queryset(self):
+        qs = (super().get_queryset()
+              .select_related('idDirector', 'idCategoria'))
+        q = (self.request.GET.get('q') or '').strip()
+        if q:
+            qs = qs.filter(
+                Q(nombre__icontains=q) |
+                Q(idDirector__nombre__icontains=q) |
+                Q(idCategoria__nombre__icontains=q)
+            )
+        return qs
+
+    def get_template_names(self):
+        # 👇 Si es HTMX devolvemos SOLO las filas (sin encabezado ni layout)
+        if is_htmx(self.request):
+            return ['_peliculasRows.html']
+        return [self.template_name]
 
 # class PeliculaCreateView(CreateView):
 #     model = Pelicula
@@ -372,10 +412,10 @@ def PeliculasTbody(request):
     return render(request, '_peliculasTbody.html', {'peliculas': peliculas})
 
 
-class PeliculaDeleteView(DeleteView):
-    model = Pelicula
-    template_name = 'peliculaConFormBorrar.html'
-    success_url = reverse_lazy('peliculaslistaoc')
+# class PeliculaDeleteView(DeleteView):
+#     model = Pelicula
+#     template_name = 'peliculaConFormBorrar.html'
+#     success_url = reverse_lazy('peliculaslistaoc')
 
 
 class PeliculaDetailView(DetailView):
@@ -392,3 +432,32 @@ class PeliculaDetailViewOC(DetailView):
         if self.request.headers.get("HX-Request"):
             return render(self.request, "_peliculaDetail.html", context, **response_kwargs)
         return super().render_to_response(context, **response_kwargs)
+
+
+class PeliculaDeleteView(DeleteView):
+    model = Pelicula
+    template_name = "peliculaConFormBorrar.html"  # fallback de página completa
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        ctx = {"object": self.object}
+        if is_htmx(request):
+            return render(request, "_peliculaconfborraroc.html", ctx)  # 👈 parcial offcanvas
+        return render(request, self.template_name, ctx)
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        try:
+            self.object.delete()
+        except IntegrityError:
+            # Por ejemplo, on_delete=PROTECT en relaciones
+            ctx = {"object": self.object, "error": "No se puede borrar por referencias relacionadas."}
+            if is_htmx(request):
+                return render(request, "_peliculaconfborraroc.html", ctx, status=409)
+            return render(request, self.template_name, ctx, status=409)
+
+        if is_htmx(request):
+            # 204: sin contenido; el form en el offcanvas cerrará y pedirá refresco del listado
+            return HttpResponse(status=204)
+        return redirect("peliculaslistaoc")
