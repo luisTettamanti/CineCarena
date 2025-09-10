@@ -174,6 +174,8 @@ class Peliculaslista(ListView):
     model = Pelicula
     template_name = 'peliculaslistaoc.html'
     context_object_name = 'peliculas'
+    ordering = 'nombre'
+    paginate_by = 3
 
     def get_queryset(self):
         queryset = super().get_queryset()

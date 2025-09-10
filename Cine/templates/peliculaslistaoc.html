@@ -124,4 +124,35 @@
     </div>
 </div>
 
+<div class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+        <a class="btn btn-outline-dark mb-3" href="?page=1">
+            Primero
+        </a>
+        <a class="btn btn-outline-dark mb-3" href="?page={{ page_obj.previous_page_number }}">
+            Anterior
+        </a>
+    {% else %}
+        <a class="btn btn-outline-dark mb-3 disabled" href="#">
+            Primero
+        </a>
+        <a class="btn btn-outline-dark mb-3 disabled" href="#">
+            Anterior
+        </a>
+    {% endif %}
+
+    <span class="current-page btn btn-outline-light disabled text-dark mb-3">
+        {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a class="btn btn-outline-dark mb-3" href="?page={{ page_obj.next_page_number }}">
+            Siguiente
+        </a>
+        <a class="btn btn-outline-dark mb-3" href="?page={{ page_obj.paginator.num_pages }}">
+            Último
+        </a>
+    {% endif %}
+</div>
+
 {% endblock %}
