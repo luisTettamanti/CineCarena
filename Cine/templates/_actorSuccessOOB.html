@@ -1,0 +1,33 @@
+<script>
+(function(){
+  var NEW_ID   = "{{ obj.pk }}";
+  var NEW_NAME = "{{ obj|escapejs }}";
+  var TARGET_ID = "{{ target_select|default:'' }}";
+
+  // 1) Asegurar que la opción exista en TODOS los selects del formset
+  var selects = Array.from(document.querySelectorAll('select[name$="-idActor"]'));
+  selects.forEach(function(s){
+    if (!Array.from(s.options).some(function(o){return String(o.value)===String(NEW_ID);})){
+      s.add(new Option(NEW_NAME, String(NEW_ID)));
+    }
+  });
+
+  // 2) Seleccionar en el select destino (si vino)
+  var target = TARGET_ID ? document.getElementById(TARGET_ID) : null;
+  if (!target) {
+    // fallback: primer vacío; si no hay, el último
+    target = selects.find(function(s){ return !s.value || String(s.value).trim()===""; }) || selects[selects.length-1];
+  }
+
+  if (target) {
+    Array.from(target.options).forEach(function(o){ o.selected = (String(o.value)===String(NEW_ID)); });
+    target.value = String(NEW_ID);
+    target.selectedIndex = Array.from(target.options).findIndex(function(o){ return String(o.value)===String(NEW_ID); });
+    target.dispatchEvent(new Event('change', {bubbles:true}));
+  }
+
+  // 3) Cerrar OffCanvas
+  var oc = document.getElementById('offcanvasActor');
+  if (oc && window.bootstrap) window.bootstrap.Offcanvas.getOrCreateInstance(oc).hide();
+})();
+</script>

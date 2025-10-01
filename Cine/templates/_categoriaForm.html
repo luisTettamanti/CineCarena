@@ -1,0 +1,18 @@
+<form
+    hx-post="{% url 'categorianuevahx' %}"
+    hx-target="#offcanvasCategoriaBody"
+    hx-swap="innerHTML"
+    >
+    {% csrf_token %}
+    {% for f in form %}
+        <div class="mb-3">
+            {{ f.label_tag }} {{ f }}
+            <div class="text-danger small">{{ f.errors }}</div>
+        </div>
+    {% endfor %}
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas">Cancelar</button>
+    </div>
+</form>
+

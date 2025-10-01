@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+    <h2 class="titulo pb-3">Película</h2>
+    {% for field in form %}
+        {% if field.name == 'idCategoria' %}
+        <div class="row align-items-end g-2 mb-3">
+            <div class="col-9 col-lg-10">
+                {{ form.idCategoria.label_tag }}
+                {{ form.idCategoria }} {# esto te renderiza <select id="id_idCategoria">... #}
+            </div>
+            <div class="col-3 col-lg-2">
+                <button
+                    type="button"
+                    class="btn btn-outline-primary w-100"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasCategoria"
+                    aria-controls="offcanvasCategoria"
+                    hx-get="{% url 'categorianuevahx' %}"
+                    hx-target="#offcanvasCategoriaBody"
+                    hx-swap="innerHTML">
+                    <i class="bi bi-plus-circle"></i> Categoría
+                </button>
+            </div>
+        </div>
+        {% elif field.name == 'idDirector' %}
+        <div class="row align-items-end g-2 mb-3">
+            <div class="col-9 col-lg-10">
+                {{ form.idDirector.label_tag }}
+                {{ form.idDirector }}
+            </div>
+            <div class="col-3 col-lg-2">
+                <button
+                    type="button"
+                    class="btn btn-outline-primary w-100"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasDirector"
+                    hx-get="{% url 'directornuevohx' %}"
+                    hx-target="#offcanvasDirectorBody"
+                    hx-swap="innerHTML">
+                    <i class="bi bi-plus-circle"></i> Director
+                </button>
+            </div>
+        </div>
+    {% else %}
+        <div class="mb-3">
+            {{ field.label_tag }}
+            {{ field }}
+        </div>
+        {% endif %}
+    {% endfor %}
+
+    <div class="row align-items-end g-2 mt-3">
+        <h3 class="titulo col-9 col-lg-10">Actores</h3>
+{#        <div class="col-3 col-lg-2">#}
+{#            <button#}
+{#                type="button"#}
+{#                class="btn btn-outline-primary w-100"#}
+{#                data-bs-toggle="offcanvas"#}
+{#                data-bs-target="#offcanvasActor"#}
+{#                aria-controls="offcanvasActor"#}
+{#                hx-get="{% url 'actornuevohx' %}"#}
+{#                hx-target="#offcanvasActorBody"#}
+{#                hx-swap="innerHTML">#}
+{#                <i class="bi bi-plus-circle"></i> Actor#}
+{#            </button>#}
+{#        </div>#}
+    </div>
+
+    {{ actores.management_form }}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <td>Nombre</td>
+                <td>Borrar</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for form in actores %}
+            <tr>
+                <td style="display:none;">{{ form.id }}</td>
+                <td>{{ form.idActor }}</td>
+                <td>{{ form.DELETE }}</td>
+                <td>
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasActor"
+                        hx-get="{% url 'actornuevohx' %}"
+                        hx-target="#offcanvasActorBody"
+                        hx-swap="innerHTML"
+                        data-target-select="{{ f.idActor.id_for_label }}"
+                        hx-vals='{"target_select": this.dataset.targetSelect}'
+                    >
+                        <i class="bi bi-plus-circle"></i>
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <button class="btn btn-primary">Guardar</button>
+    <a class="btn btn-primary" href="{% url 'peliculaslistaoc2' %}">Cancelar</a>
+</form>
+
+<div class="offcanvas offcanvas-end bg-dark text-white" tabindex="-1" id="offcanvasCategoria" aria-labelledby="offcanvasCategoriaLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasCategoriaLabel">Nueva Categoría</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body" id="offcanvasCategoriaBody">
+    <div class="text-muted">Cargando…</div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-end bg-dark text-white" tabindex="-1" id="offcanvasDirector" aria-labelledby="offcanvasDirectorLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasDirectorLabel">Nuevo Director</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body" id="offcanvasDirectorBody">
+    <div class="text-muted">Cargando…</div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-end bg-dark text-white" tabindex="-1" id="offcanvasActor" aria-labelledby="offcanvasActorLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasActorLabel">Nuevo Actor</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body" id="offcanvasActorBody">
+    <div class="text-muted">Cargando…</div>
+    </div>
+</div>
+
+{% endblock %}
+
+

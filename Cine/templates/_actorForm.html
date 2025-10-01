@@ -1,0 +1,17 @@
+<form
+  hx-post="{% url 'actornuevohx' %}"
+  hx-target="#offcanvasActorBody"
+  hx-swap="innerHTML">
+  {% csrf_token %}
+  <input type="hidden" name="target_select" value="{{ target_select|default_if_none:'' }}">
+  {% for f in form %}
+    <div class="mb-3">
+      {{ f.label_tag }} {{ f }}
+      <div class="text-danger small">{{ f.errors }}</div>
+    </div>
+  {% endfor %}
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary" type="submit">Guardar</button>
+    <button class="btn btn-secondary" type="button" data-bs-dismiss="offcanvas">Cancelar</button>
+  </div>
+</form>

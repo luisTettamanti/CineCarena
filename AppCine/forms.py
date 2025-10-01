@@ -1,5 +1,5 @@
 from django import forms
-from .models import Pelicula, ActorPelicula
+from .models import Pelicula, ActorPelicula, Categoria, Director, Actor
 from django.forms import inlineformset_factory
 
 class PeliculaForm(forms.ModelForm):
@@ -19,12 +19,50 @@ class PeliculaForm(forms.ModelForm):
         }
 
 
-ActorPeliculaFormSet = inlineformset_factory(Pelicula, ActorPelicula,
-    fields=['id', 'idActor'],
-    widgets={
-        'id': forms.TextInput(attrs={'class': 'form-control'}),
-        'idActor': forms.Select(attrs={'class': 'form-select'}),
-    },
-    extra=0,           # cantidad de formularios en blanco
-    can_delete=True    # permitir quitar actores de la película
+class ActorPeliculaForm(forms.ModelForm):
+    idActor = forms.ModelChoiceField(
+        queryset=Actor.objects.all().order_by('nombre'),
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
+    class Meta:
+        model = ActorPelicula
+        fields = ['id', 'idActor']
+
+
+ActorPeliculaFormSet = inlineformset_factory(
+    Pelicula,
+    ActorPelicula,
+    form=ActorPeliculaForm,
+    extra=3,
+    can_delete=True
 )
+
+
+class CategoriaForm(forms.ModelForm):
+    class Meta:
+        model = Categoria
+        fields = ('nombre',)
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class':'form-control'}),
+        }
+
+
+class DirectorForm(forms.ModelForm):
+    class Meta:
+        model = Director
+        fields = ('nombre',)
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class':'form-control'}),
+        }
+
+
+class ActorForm(forms.ModelForm):
+    class Meta:
+        model = Actor
+        fields = '__all__'
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class':'form-control'}),
+            'fechaNac': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'origen': forms.TextInput(attrs={'class':'form-control'}),
+        }

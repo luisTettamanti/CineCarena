@@ -35,5 +35,10 @@ urlpatterns = [
     path("peliculas/tbody/", views.PeliculasTbody, name="peliculastbody"),
     path("peliculas/<int:pk>/actoradd/", views.PeliculaActorAddForm, name="peliculaactoraddform"),
     path("peliculas/actoraddnew/", views.PeliculaActorAddFormNew, name="peliculaactoraddformnew"),
-
+    path('peliculasListaoc2/', views.Peliculaslista2.as_view(), name='peliculaslistaoc2'),
+    path('peliculaModificar2/<int:pk>/', views.peliculaFormModificar2.as_view(), name='peliculamodificar2'),
+    path('peliculaCrear2/', views.peliculaFormCrear2.as_view(), name='peliculacrear2'),
+    path('categoriaCrear/', views.CategoriaCreateHX.as_view(), name='categorianuevahx'),
+    path('directorCrear/', views.DirectorCreateHX.as_view(), name='directornuevohx'),
+    path('actorCrear/', views.ActorCreateHX.as_view(), name='actornuevohx'),
     ]

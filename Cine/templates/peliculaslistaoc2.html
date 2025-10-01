@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+    <div class="d-flex align-items-center justify-content-between">
+        <div id="titulo">Películas</div>
+
+        <form method="GET">
+            <div class="input-group">
+                <input type="text" class="form-control" name="q" value="{{ query }}" \
+                    placeholder="Buscar...">
+                <button class="btn btn-primary text-light" type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                    </svg>
+                </button>
+            </div>
+        </form>
+        <a class="btn btn-primary me-2" href="{% url 'peliculacrear2' %}">Nueva</a>
+    </div>
+
+    <table id="tablaPelis" class="table table-striped table-hover">
+        <thead>
+            <th class="d-none d-sm-table-cell">id</th>
+            <th class="d-none d-sm-table-cell">Netflix</th>
+            <th>nombre</th>
+            <th class="d-none d-md-table-cell">director</th>
+            <th></th>
+        </thead>
+        <tbody id="tbodyPelis"
+               hx-get="{% url 'peliculastbody' %}"
+               hx-trigger="refresh"
+               hx-swap="outerHTML">
+        {% for peli in peliculas %}
+            <tr>
+                <td class="align-middle d-none d-sm-table-cell"
+                    style="cursor:pointer"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#peliculaOffcanvas"
+                    aria-controls="peliculaOffcanvas"
+                    hx-get="{% url 'peliculadetailoc' peli.id %}"
+                    hx-target="#offcanvasBody"
+                    hx-swap="innerHTML"
+                >{{ peli.id }}</td>
+                <td class="align-middle d-none d-sm-table-cell"
+                    style="cursor:pointer"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#peliculaOffcanvas"
+                    aria-controls="peliculaOffcanvas"
+                    hx-get="{% url 'peliculadetailoc' peli.id %}"
+                    hx-target="#offcanvasBody"
+                    hx-swap="innerHTML"
+                >{{ peli.ordenNetflix }}</td>
+                <td class="align-middle"
+                    style="cursor:pointer"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#peliculaOffcanvas"
+                    aria-controls="peliculaOffcanvas"
+                    hx-get="{% url 'peliculadetailoc' peli.id %}"
+                    hx-target="#offcanvasBody"
+                    hx-swap="innerHTML">{{ peli.nombre }}</td>
+                <td class="align-middle d-none d-md-table-cell"
+                    style="cursor:pointer"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#peliculaOffcanvas"
+                    aria-controls="peliculaOffcanvas"
+                    hx-get="{% url 'peliculadetailoc' peli.id %}"
+                    hx-target="#offcanvasBody"
+                    hx-swap="innerHTML"
+                >{{ peli.idDirector }}</td>
+                <td style="width:1%; white-space:nowrap;">
+                    <div class="d-flex justify-content-end align-items-end">
+                        <a class="btn btn-primary me-2" href="{% url 'peliculamodificar2' peli.id %}">Modificar</a>
+                        <a class="btn btn-danger"
+                            href="{% url 'peliculadelete' peli.id %}"           {# fallback #}
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#peliculaOffcanvas"
+                            hx-get="{% url 'peliculadelete' peli.id %}"
+                            hx-target="#offcanvasBody"
+                            hx-swap="innerHTML">
+                            Borrar
+                        </a>
+{#                        <a class="btn btn-primary" href="{% url 'peliculaBorrarConForm' peli.id %}">Borrar</a>#}
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+<!-- Offcanvas a la derecha -->
+<div class="offcanvas offcanvas-end bg-dark text-white"
+     id="peliculaOffcanvas"
+     tabindex="-1"
+     aria-labelledby="peliculaOffcanvasLabel"
+     style="--bs-offcanvas-width: 380px;"
+     hx-on="pelicula-saved: bootstrap.Offcanvas.getOrCreateInstance('#peliculaOffcanvas').hide();
+            pelicula-saved: htmx.trigger('#tbodyPelis','refresh')">
+
+    <div class="offcanvas-header">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body" id="offcanvasBody">
+        <!-- HTMX inyecta acá el parcial -->
+    </div>
+</div>
+
+<div class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+        <a class="btn btn-outline-dark mb-3" href="?page=1">
+            Primero
+        </a>
+        <a class="btn btn-outline-dark mb-3" href="?page={{ page_obj.previous_page_number }}">
+            Anterior
+        </a>
+    {% else %}
+        <a class="btn btn-outline-dark mb-3 disabled" href="#">
+            Primero
+        </a>
+        <a class="btn btn-outline-dark mb-3 disabled" href="#">
+            Anterior
+        </a>
+    {% endif %}
+
+    <span class="current-page btn btn-outline-light disabled text-dark mb-3">
+        {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a class="btn btn-outline-dark mb-3" href="?page={{ page_obj.next_page_number }}">
+            Siguiente
+        </a>
+        <a class="btn btn-outline-dark mb-3" href="?page={{ page_obj.paginator.num_pages }}">
+            Último
+        </a>
+    {% endif %}
+</div>
+
+{% endblock %}

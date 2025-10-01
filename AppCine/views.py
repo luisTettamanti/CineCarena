@@ -1,9 +1,9 @@
 from cgitb import reset
 from datetime import datetime
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from AppCine.forms import PeliculaForm, ActorPeliculaFormSet
+from AppCine.forms import PeliculaForm, ActorPeliculaFormSet, CategoriaForm, DirectorForm, ActorForm
 from AppCine.models import Pelicula, Actor, Director, Categoria
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.db import transaction
@@ -11,7 +11,8 @@ import logging
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.db.models import Q
-import json
+from urllib.parse import urlencode
+
 
 log = logging.getLogger(__name__)
 
@@ -175,7 +176,7 @@ class Peliculaslista(ListView):
     template_name = 'peliculaslistaoc.html'
     context_object_name = 'peliculas'
     ordering = 'nombre'
-    paginate_by = 3
+    paginate_by = 10
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -463,3 +464,232 @@ class PeliculaDeleteView(DeleteView):
             # 204: sin contenido; el form en el offcanvas cerrará y pedirá refresco del listado
             return HttpResponse(status=204)
         return redirect("peliculaslistaoc")
+
+
+class Peliculaslista2(ListView):
+    model = Pelicula
+    template_name = 'peliculaslistaoc2.html'
+    context_object_name = 'peliculas'
+    ordering = 'nombre'
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(Q(nombre__icontains=query))
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')  # Enviar el valor de la búsqueda al contexto
+        return context
+
+
+class peliculaFormModificar2(UpdateView):
+    model = Pelicula
+    form_class = PeliculaForm
+    template_name = 'peliculaForm2.html'
+    success_url = reverse_lazy('peliculaslistaoc2')
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data['actores'] = ActorPeliculaFormSet(self.request.POST, instance=self.object)
+        else:
+            data['actores'] = ActorPeliculaFormSet(instance=self.object)
+        return data
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        # --- Categoría nueva ---
+        cat_pk = self.request.GET.get("categoria_nueva")
+        if cat_pk and "idCategoria" in form.fields:
+            form.initial["idCategoria"] = cat_pk
+            form.fields["idCategoria"].initial = cat_pk
+            # asegurar selección con instancia (ModelForm)
+            try:
+                form.instance.idCategoria_id = int(cat_pk)
+            except (ValueError, TypeError):
+                pass
+
+        # --- Director nuevo ---
+        dir_pk = self.request.GET.get("director_nuevo")
+        # ajustá el nombre del campo si en tu form es distinto (p.ej. "director")
+        if dir_pk and "idDirector" in form.fields:
+            form.initial["idDirector"] = dir_pk
+            form.fields["idDirector"].initial = dir_pk
+            try:
+                form.instance.idDirector_id = int(dir_pk)
+            except (ValueError, TypeError):
+                pass
+
+        # --- Actor nuevo ---
+        dir_pk = self.request.GET.get("actor_nuevo")
+        # ajustá el nombre del campo si en tu form es distinto (p.ej. "director")
+        if dir_pk and "idActor" in form.fields:
+            form.initial["idActor"] = dir_pk
+            form.fields["idActor"].initial = dir_pk
+            try:
+                form.instance.idDirector_id = int(dir_pk)
+            except (ValueError, TypeError):
+                pass
+
+        return form
+
+    @transaction.atomic
+    def form_valid(self, form):
+        # 1) Guardar la película
+        self.object = form.save()
+
+        # 2) Reconstruir el formset con la instance YA creada y los datos del POST
+        formset = ActorPeliculaFormSet(self.request.POST, instance=self.object)
+
+        if formset.is_valid():
+            formset.save()
+            return super().form_valid(form)
+        else:
+            # si el formset falla, devolvés el template con errores
+            return render(self.request, self.template_name, {
+                'form': form,
+                'actores': formset,
+                'object': self.object,
+            })
+
+
+class peliculaFormCrear2(CreateView):
+    model = Pelicula
+    form_class = PeliculaForm
+    template_name = 'peliculaForm2.html'
+    success_url = reverse_lazy('peliculaslistaoc2')
+
+    # Preselecciones por querystring (igual que en Modificar)
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        # --- Categoría nueva ---
+        cat_pk = self.request.GET.get("categoria_nueva")
+        if cat_pk and "idCategoria" in form.fields:
+            form.initial["idCategoria"] = cat_pk
+            form.fields["idCategoria"].initial = cat_pk
+            try:
+                # en CreateView todavía no hay instance persistida; igual podés setearla
+                form.instance.idCategoria_id = int(cat_pk)
+            except (ValueError, TypeError):
+                pass
+
+        # --- Director nuevo ---
+        dir_pk = self.request.GET.get("director_nuevo")
+        if dir_pk and "idDirector" in form.fields:
+            form.initial["idDirector"] = dir_pk
+            form.fields["idDirector"].initial = dir_pk
+            try:
+                form.instance.idDirector_id = int(dir_pk)
+            except (ValueError, TypeError):
+                pass
+
+        return form
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        if self.request.method == 'POST':
+            # en POST, todavía no guardamos la película; el formset se liga a self.object (None),
+            # y luego en form_valid lo re-instanciamos con instance ya creada para validar/guardar
+            ctx['actores'] = ActorPeliculaFormSet(self.request.POST, instance=self.object)
+        else:
+            # GET: podés opcionalmente “sembrar” el primer renglón con actor_nuevo
+            actor_pk = self.request.GET.get("actor_nuevo")
+            if actor_pk:
+                # Esto funciona si tu formset tiene field 'idActor' y al menos extra>=1
+                try:
+                    initial = [{'idActor': int(actor_pk)}]
+                except (ValueError, TypeError):
+                    initial = None
+                ctx['actores'] = ActorPeliculaFormSet(instance=self.object, initial=initial)
+            else:
+                ctx['actores'] = ActorPeliculaFormSet(instance=self.object)
+
+        return ctx
+
+    @transaction.atomic
+    def form_valid(self, form):
+        # 1) Guardar la película
+        self.object = form.save()
+
+        # 2) Reconstruir el formset con la instance YA creada y los datos del POST
+        formset = ActorPeliculaFormSet(self.request.POST, instance=self.object)
+
+        if formset.is_valid():
+            formset.save()
+            return super().form_valid(form)
+        else:
+            # si el formset falla, devolvés el template con errores
+            return render(self.request, self.template_name, {
+                'form': form,
+                'actores': formset,
+                'object': self.object,
+            })
+
+
+class CategoriaCreateHX(CreateView):
+    model = Categoria
+    form_class = CategoriaForm
+    template_name = "_categoriaForm.html"
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        obj = form.save()
+        if self.request.headers.get("HX-Request"):
+            return render(
+                self.request,
+                "_categoriaSuccessOOB.html",
+                {"obj": obj},
+                status=200,
+            )
+        return super().form_valid(form)
+
+
+class DirectorCreateHX(CreateView):
+    model = Director
+    form_class = DirectorForm
+    template_name = "_directorForm.html"
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        obj = form.save()
+        if self.request.headers.get("HX-Request"):
+            return render(
+                self.request,
+                "_directorSuccessOOB.html",
+                {"obj": obj},
+                status=200,
+            )
+        return super().form_valid(form)
+
+
+class ActorCreateHX(CreateView):
+    model = Actor
+    form_class = ActorForm
+    template_name = "_actorForm.html"
+
+    def get_context_data(self, **kw):
+        ctx = super().get_context_data(**kw)
+        ctx["target_select"] = self.request.GET.get("target_select") or self.request.POST.get("target_select")
+        return ctx
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        obj = form.save()
+        if self.request.headers.get("HX-Request"):
+            return render(self.request, "_actorSuccessOOB.html",
+                          {"obj": obj,
+                           "target_select": self.request.POST.get("target_select")}, status=200)
+        return super().form_valid(form)

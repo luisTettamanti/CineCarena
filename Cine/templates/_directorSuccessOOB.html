@@ -1,0 +1,29 @@
+{# Inserta la opción en el select #}
+<option
+    value="{{ obj.pk }}"
+    hx-swap-oob="beforeend:#id_idDirector"
+>{{ obj }}</option>
+
+<script>
+(function(){
+    var newId = "{{ obj.pk }}";
+    var select = document.getElementById('id_idDirector') ||
+               document.querySelector('select[name="idDirector"]');
+    if (!select) return;
+
+    // Si por alguna razón la opción aún no existe, la creamos.
+    if (!select.querySelector('option[value="{{ obj.pk }}"]')) {
+    select.add(new Option("{{ obj|escapejs }}", newId));
+    }
+
+    // 👉 Forzar la selección
+    Array.from(select.options).forEach(function(o){ o.selected = (o.value === newId); });
+    select.value = newId;                             // redundante pero fiable
+    select.selectedIndex = Array.from(select.options).findIndex(function(o){ return o.value === newId; });
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+
+    // Cerrar el offcanvas
+    var oc = document.getElementById('offcanvasDirector');
+    if (oc && window.bootstrap) { window.bootstrap.Offcanvas.getOrCreateInstance(oc).hide(); }
+})();
+</script>

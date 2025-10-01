@@ -29,7 +29,7 @@ class Pelicula(models.Model):
     anio = models.IntegerField(verbose_name='año')
     duracion = models.IntegerField(verbose_name='duración')
     idDirector = models.ForeignKey(Director, on_delete=models.CASCADE, verbose_name="director")
-    imdb = models.IntegerField(blank=True, null=True, help_text="Puntaje en IMDB")
+    imdb = models.DecimalField(max_digits=3, decimal_places=1, blank=True, null=True, help_text="Puntaje en IMDB")
     idCategoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, verbose_name="categoría")
     ordenNetflix = models.IntegerField(blank=True, null=True, help_text="Ranking en Netflix")
     caratula = models.URLField(blank=True, null=True, verbose_name="carátula")
