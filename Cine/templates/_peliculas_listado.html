@@ -1,0 +1,41 @@
+<table id="tablaPelis" class="table table-striped table-hover">
+    <thead>
+        <th class="d-none d-sm-table-cell">id</th>
+        <th class="d-none d-sm-table-cell">Netflix</th>
+        <th hx-get="?sort=nombre&dir=asc"
+            hx-target="#tabla-peliculas"
+            hx-select="tbody#tabla-peliculas"
+            hx-swap="outerHTML"
+            role="button">Nombre</th>
+        <th hx-get="?sort=idDirector__nombre&dir=asc"
+            hx-target="#tabla-peliculas"
+            hx-select="tbody#tabla-peliculas"
+            hx-swap="outerHTML"
+            role="button"
+            class="d-none d-md-table-cell">director</th>
+        <th></th>
+    </thead>
+
+    <tbody id="tabla-peliculas">
+        {% include "_peliculas_tabla.html" %}
+    </tbody>
+
+</table>
+
+<!-- Offcanvas a la derecha -->
+<div class="offcanvas offcanvas-end bg-dark text-white"
+     id="peliculaOffcanvas"
+     tabindex="-1"
+     aria-labelledby="peliculaOffcanvasLabel"
+     style="--bs-offcanvas-width: 380px;"
+     hx-on="pelicula-saved: bootstrap.Offcanvas.getOrCreateInstance('#peliculaOffcanvas').hide();
+            pelicula-saved: htmx.trigger('#tbodyPelis','refresh')">
+
+    <div class="offcanvas-header">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body" id="offcanvasBody">
+        <!-- HTMX inyecta acá el parcial -->
+    </div>
+</div>

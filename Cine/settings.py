@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'AppCine',
     'bootstrap5',
+    'django_tables2',
 ]
 
 MIDDLEWARE = [

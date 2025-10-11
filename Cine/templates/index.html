@@ -9,7 +9,24 @@
     {% block content %}
         <h1>Cine Carena</h1>
         <h2>Bienvenido, {{ nombre }}</h2>
-        <h2>Fecha: {{ fecha_actual }}</h2>
+
+        <div
+            id="resultado"
+{#            hx-get="{% url 'mensaje' %}"#}
+{#            hx-trigger="every 5s"#}
+{#            hx-swap="innerHTML"#}
+        >
+{#            <h2>Hora: {{ hora }}</h2>#}
+        </div>
+
+        <button
+            hx-get="{% url 'mensaje' %}"
+            hx-target="#resultado"
+            hx-swap="innerHTML"
+{#            hx-trigger="every 5s"#}
+            class="btn btn-primary mt-3 mb-3">Prueba HTMX
+        </button>
+
         <div id="galeria">
             {% for peli in peliculas %}
               <a href="{% url 'peliculaconsultar' peli.id %}">
@@ -18,7 +35,7 @@
               </a>
             {% endfor %}
         </div>
-        <a href="{% url 'peliculaslistaoc' %}">Películas</a>
+        <a href="{% url 'peliculaslistaoc4' %}">Películas</a>
     {% endblock %}
 </body>
 </html>

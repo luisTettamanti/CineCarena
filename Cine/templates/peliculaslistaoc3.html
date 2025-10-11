@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+    <div class="d-flex align-items-center justify-content-between">
+        <div id="titulo">Películas</div>
+        <a class="btn btn-primary me-2" href="{% url 'peliculacrear2' %}">Nueva</a>
+    </div>
+
+    <div id="tabla-wrapper">
+        {% include "_peliculas_listado.html" %}
+    </div>
+
+{% endblock %}

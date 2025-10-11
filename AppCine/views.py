@@ -3,6 +3,8 @@ from datetime import datetime
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
+from django.utils.timezone import now
+
 from AppCine.forms import PeliculaForm, ActorPeliculaFormSet, CategoriaForm, DirectorForm, ActorForm
 from AppCine.models import Pelicula, Actor, Director, Categoria
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
@@ -11,6 +13,10 @@ import logging
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.db.models import Q
+
+from django_tables2.views import SingleTableView
+from .tables import PeliculaTable
+
 from urllib.parse import urlencode
 
 
@@ -27,6 +33,10 @@ def index(request):
     peliculas = Pelicula.objects.filter(ordenNetflix__isnull=False)
     contexto = {'fecha_actual': datetime.now(), 'nombre': 'Luis', 'peliculas': peliculas}
     return render(request, 'index.html', contexto)
+
+
+def mensaje(request):
+    return render(request, "_mensaje.html", {'hora': now().strftime("%H:%M:%S")})
 
 
 def pelicula(request):
@@ -466,7 +476,7 @@ class PeliculaDeleteView(DeleteView):
         return redirect("peliculaslistaoc")
 
 
-class Peliculaslista2(ListView):
+class PeliculasLista2(ListView):
     model = Pelicula
     template_name = 'peliculaslistaoc2.html'
     context_object_name = 'peliculas'
@@ -484,6 +494,36 @@ class Peliculaslista2(ListView):
         context = super().get_context_data(**kwargs)
         context['query'] = self.request.GET.get('q', '')  # Enviar el valor de la búsqueda al contexto
         return context
+
+
+class PeliculasLista3(ListView):
+    model = Pelicula
+    template_name = 'peliculaslistaoc3.html'
+    context_object_name = 'peliculas'
+    # ordering = 'nombre'
+    # paginate_by = 10
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        sort = self.request.GET.get("sort", "nombre")  # campo por defecto
+        direction = self.request.GET.get("dir", "asc")
+        if direction == "desc":
+            sort = f"-{sort}"
+        return qs.order_by(sort)
+
+
+class PeliculasLista4(SingleTableView):
+    model = Pelicula
+    table_class = PeliculaTable
+    template_name = "peliculaslistaoc4.html"
+    paginate_by = 10
+
+    def get_queryset(self):
+        qs = super().get_queryset().select_related("idDirector", "idCategoria")
+        q = self.request.GET.get("q")
+        if q:
+            qs = qs.filter(Q(nombre__icontains=q))
+        return qs
 
 
 class peliculaFormModificar2(UpdateView):

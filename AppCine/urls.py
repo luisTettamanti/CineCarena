@@ -2,10 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
     path('index/', views.index, name='index'),
     path('', views.index, name='index'),
-
+    path('mensaje/', views.mensaje, name='mensaje'),
     path('pelicula/', views.pelicula, name='pelicula'),
     path('peliculadatos/', views.peliculadatos, name='peliculadatos'),
     path('peliculasLista/', views.peliculasLista, name='peliculaslista'),
@@ -35,7 +34,10 @@ urlpatterns = [
     path("peliculas/tbody/", views.PeliculasTbody, name="peliculastbody"),
     path("peliculas/<int:pk>/actoradd/", views.PeliculaActorAddForm, name="peliculaactoraddform"),
     path("peliculas/actoraddnew/", views.PeliculaActorAddFormNew, name="peliculaactoraddformnew"),
-    path('peliculasListaoc2/', views.Peliculaslista2.as_view(), name='peliculaslistaoc2'),
+    path('peliculasListaoc2/', views.PeliculasLista2.as_view(), name='peliculaslistaoc2'),
+    path('peliculasListaoc3/', views.PeliculasLista3.as_view(), name='peliculaslistaoc3'),
+    path('peliculasListaoc4/', views.PeliculasLista4.as_view(), name='peliculaslistaoc4'),
+
     path('peliculaModificar2/<int:pk>/', views.peliculaFormModificar2.as_view(), name='peliculamodificar2'),
     path('peliculaCrear2/', views.peliculaFormCrear2.as_view(), name='peliculacrear2'),
     path('categoriaCrear/', views.CategoriaCreateHX.as_view(), name='categorianuevahx'),

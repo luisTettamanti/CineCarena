@@ -1,0 +1,53 @@
+{% for peli in peliculas %}
+    <tr>
+        <td class="align-middle d-none d-sm-table-cell"
+            style="cursor:pointer"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#peliculaOffcanvas"
+            aria-controls="peliculaOffcanvas"
+            hx-get="{% url 'peliculadetailoc' peli.id %}"
+            hx-target="#offcanvasBody"
+            hx-swap="innerHTML"
+        >{{ peli.id }}</td>
+        <td class="align-middle d-none d-sm-table-cell"
+            style="cursor:pointer"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#peliculaOffcanvas"
+            aria-controls="peliculaOffcanvas"
+            hx-get="{% url 'peliculadetailoc' peli.id %}"
+            hx-target="#offcanvasBody"
+            hx-swap="innerHTML"
+        >{{ peli.ordenNetflix }}</td>
+        <td class="align-middle"
+            style="cursor:pointer"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#peliculaOffcanvas"
+            aria-controls="peliculaOffcanvas"
+            hx-get="{% url 'peliculadetailoc' peli.id %}"
+            hx-target="#offcanvasBody"
+            hx-swap="innerHTML">{{ peli.nombre }}</td>
+        <td class="align-middle d-none d-md-table-cell"
+            style="cursor:pointer"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#peliculaOffcanvas"
+            aria-controls="peliculaOffcanvas"
+            hx-get="{% url 'peliculadetailoc' peli.id %}"
+            hx-target="#offcanvasBody"
+            hx-swap="innerHTML"
+        >{{ peli.idDirector }}</td>
+        <td style="width:1%; white-space:nowrap;">
+            <div class="d-flex justify-content-end align-items-end">
+                <a class="btn btn-primary me-2" href="{% url 'peliculamodificar2' peli.id %}">Modificar</a>
+                <a class="btn btn-danger"
+                    href="{% url 'peliculadelete' peli.id %}"           {# fallback #}
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#peliculaOffcanvas"
+                    hx-get="{% url 'peliculadelete' peli.id %}"
+                    hx-target="#offcanvasBody"
+                    hx-swap="innerHTML">
+                    Borrar
+                </a>
+            </div>
+        </td>
+    </tr>
+{% endfor %}
