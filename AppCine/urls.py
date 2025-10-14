@@ -37,9 +37,12 @@ urlpatterns = [
     path('peliculasListaoc2/', views.PeliculasLista2.as_view(), name='peliculaslistaoc2'),
     path('peliculasListaoc3/', views.PeliculasLista3.as_view(), name='peliculaslistaoc3'),
     path('peliculasListaoc4/', views.PeliculasLista4.as_view(), name='peliculaslistaoc4'),
+    path('peliculasListaoc5/', views.PeliculasLista5.as_view(), name='peliculaslistaoc5'),
 
     path('peliculaModificar2/<int:pk>/', views.peliculaFormModificar2.as_view(), name='peliculamodificar2'),
+    path('peliculaModificar3/<int:pk>/', views.peliculaFormModificar3.as_view(), name='peliculamodificar3'),
     path('peliculaCrear2/', views.peliculaFormCrear2.as_view(), name='peliculacrear2'),
+    path('peliculaCrear3/', views.peliculaFormCrear3.as_view(), name='peliculacrear3'),
     path('categoriaCrear/', views.CategoriaCreateHX.as_view(), name='categorianuevahx'),
     path('directorCrear/', views.DirectorCreateHX.as_view(), name='directornuevohx'),
     path('actorCrear/', views.ActorCreateHX.as_view(), name='actornuevohx'),

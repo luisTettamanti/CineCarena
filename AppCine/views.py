@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.timezone import now
 
-from AppCine.forms import PeliculaForm, ActorPeliculaFormSet, CategoriaForm, DirectorForm, ActorForm
+from AppCine.forms import PeliculaForm, ActorPeliculaFormSet, CategoriaForm, DirectorForm, ActorForm, PeliculaForm2
 from AppCine.models import Pelicula, Actor, Director, Categoria
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.db import transaction
@@ -15,7 +15,7 @@ from django.template.loader import render_to_string
 from django.db.models import Q
 
 from django_tables2.views import SingleTableView
-from .tables import PeliculaTable
+from .tables import PeliculaTable, PeliculaTable2
 
 from urllib.parse import urlencode
 
@@ -671,6 +671,135 @@ class peliculaFormCrear2(CreateView):
                 'actores': formset,
                 'object': self.object,
             })
+
+
+class PeliculasLista5(SingleTableView):
+    model = Pelicula
+    table_class = PeliculaTable2
+    template_name = "peliculaslistaoc5.html"
+    paginate_by = 10
+
+    def get_queryset(self):
+        qs = super().get_queryset().select_related("idDirector", "idCategoria")
+        q = self.request.GET.get("q")
+        if q:
+            qs = qs.filter(Q(nombre__icontains=q))
+        return qs
+
+
+class peliculaFormModificar3(UpdateView):
+    model = Pelicula
+    form_class = PeliculaForm2
+    template_name = 'peliculaForm3.html'
+    success_url = reverse_lazy('peliculaslistaoc5')
+
+    def get_context_data(self, **kwargs):
+        # ya no armamos formset de actores
+        return super().get_context_data(**kwargs)
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        # --- Categoría nueva ---
+        cat_pk = self.request.GET.get("categoria_nueva")
+        if cat_pk and "idCategoria" in form.fields:
+            form.initial["idCategoria"] = cat_pk
+            form.fields["idCategoria"].initial = cat_pk
+            try:
+                form.instance.idCategoria_id = int(cat_pk)
+            except (ValueError, TypeError):
+                pass
+
+        # --- Director nuevo ---
+        dir_pk = self.request.GET.get("director_nuevo")
+        if dir_pk and "idDirector" in form.fields:
+            form.initial["idDirector"] = dir_pk
+            form.fields["idDirector"].initial = dir_pk
+            try:
+                form.instance.idDirector_id = int(dir_pk)
+            except (ValueError, TypeError):
+                pass
+
+        # --- Actor nuevo (solo preselección) ---
+        act_pk = self.request.GET.get("actor_nuevo")
+        if act_pk and "actores" in form.fields:
+            try:
+                actor = Actor.objects.get(pk=int(act_pk))
+                # asegurar que aparezca en el queryset del widget
+                form.fields["actores"].queryset = Actor.objects.all()
+                # si estamos editando, sumamos a los ya seleccionados:
+                inicial = list(form.initial.get("actores", [])) or \
+                          list(form.instance.actores.values_list("pk", flat=True))
+                if actor.pk not in inicial:
+                    inicial.append(actor.pk)
+                form.initial["actores"] = inicial
+            except (Actor.DoesNotExist, ValueError, TypeError):
+                pass
+
+        return form
+
+    @transaction.atomic
+    def form_valid(self, form):
+        # No hay formset de actores: Django guarda el M2M directo
+        return super().form_valid(form)
+
+
+class peliculaFormCrear3(CreateView):
+    model = Pelicula
+    form_class = PeliculaForm2
+    template_name = 'peliculaForm3.html'
+    success_url = reverse_lazy('peliculaslistaoc5')
+
+    def get_context_data(self, **kwargs):
+        # ya no armamos formset de actores
+        return super().get_context_data(**kwargs)
+
+    # Preselecciones por querystring (igual que en Modificar)
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        # --- Categoría nueva ---
+        cat_pk = self.request.GET.get("categoria_nueva")
+        if cat_pk and "idCategoria" in form.fields:
+            form.initial["idCategoria"] = cat_pk
+            form.fields["idCategoria"].initial = cat_pk
+            try:
+                # en CreateView todavía no hay instance persistida; igual podés setearla
+                form.instance.idCategoria_id = int(cat_pk)
+            except (ValueError, TypeError):
+                pass
+
+        # --- Director nuevo ---
+        dir_pk = self.request.GET.get("director_nuevo")
+        if dir_pk and "idDirector" in form.fields:
+            form.initial["idDirector"] = dir_pk
+            form.fields["idDirector"].initial = dir_pk
+            try:
+                form.instance.idDirector_id = int(dir_pk)
+            except (ValueError, TypeError):
+                pass
+
+        # --- Actor nuevo (preselección) ---
+        act_pk = self.request.GET.get("actor_nuevo")
+        if act_pk and "actores" in form.fields:
+            try:
+                actor_id = int(act_pk)
+                # asegurar queryset (por si usás filtros dinámicos)
+                form.fields["actores"].queryset = Actor.objects.all()
+                # construir lista de ids
+                inicial = list(form.initial.get("actores", []))
+                if actor_id not in inicial:
+                    inicial.append(actor_id)
+                form.initial["actores"] = inicial
+            except (ValueError, TypeError):
+                pass
+
+        return form
+
+    @transaction.atomic
+    def form_valid(self, form):
+        # No hay formset de actores: Django guarda el M2M directo
+        return super().form_valid(form)
 
 
 class CategoriaCreateHX(CreateView):

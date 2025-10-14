@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+
+    <div class="d-flex align-items-center justify-content-between py-3">
+        <div id="titulo">Películas</div>
+
+        <div class="d-none d-md-table-cell">
+            <form method="get" class="row g-2">
+                <div class="col-auto">
+                    <input type="text" name="q" class="form-control" placeholder="Buscar…" value="{{ request.GET.q }}">
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-outline-secondary me-2" type="submit">Buscar</button>
+                </div>
+            </form>
+        </div>
+
+        <a class="btn btn-primary" href="{% url 'peliculacrear3' %}">Nueva</a>
+    </div>
+
+    {% render_table table %}
+
+    <!-- Offcanvas a la derecha -->
+    <div class="offcanvas offcanvas-end bg-dark text-white"
+         id="peliculaOffcanvas"
+         tabindex="-1"
+         aria-labelledby="peliculaOffcanvasLabel"
+         style="--bs-offcanvas-width: 380px;"
+         hx-on="pelicula-saved: bootstrap.Offcanvas.getOrCreateInstance('#peliculaOffcanvas').hide();
+                pelicula-saved: htmx.trigger('#tbodyPelis','refresh')">
+
+        <div class="offcanvas-header">
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+
+        <div class="offcanvas-body" id="offcanvasBody">
+            <!-- HTMX inyecta acá el parcial -->
+        </div>
+    </div>
+
+{% endblock %}

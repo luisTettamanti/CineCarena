@@ -1,6 +1,7 @@
 from django import forms
 from .models import Pelicula, ActorPelicula, Categoria, Director, Actor
 from django.forms import inlineformset_factory
+from django_select2.forms import ModelSelect2MultipleWidget
 
 class PeliculaForm(forms.ModelForm):
     class Meta:
@@ -16,6 +17,30 @@ class PeliculaForm(forms.ModelForm):
             'ordenNetflix': forms.NumberInput(attrs={'class':'form-control'}),
             'caratula': forms.URLInput(attrs={'class': 'form-control'}),
             'resenia': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+
+class PeliculaForm2(forms.ModelForm):
+    class Meta:
+        model = Pelicula
+        fields = '__all__'
+        field_order = ["nombre", "anio", "duracion", "idDirector", "imdb", "idCategoria",
+                       "ordenNetflix", "caratula", "actores", "resenia"]
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class':'form-control'}),
+            'anio': forms.NumberInput(attrs={'class':'form-control'}),
+            'duracion': forms.NumberInput(attrs={'class':'form-control'}),
+            'idDirector': forms.Select(attrs={'class':'form-select'}),
+            'imdb': forms.NumberInput(attrs={'class':'form-control'}),
+            'idCategoria': forms.Select(attrs={'class':'form-select'}),
+            'ordenNetflix': forms.NumberInput(attrs={'class':'form-control'}),
+            'caratula': forms.URLInput(attrs={'class': 'form-control'}),
+            'resenia': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'actores': ModelSelect2MultipleWidget(
+                model=Actor,
+                search_fields=["nombre__icontains"],
+                max_results=20,  # opcional
+            )
         }
 
 

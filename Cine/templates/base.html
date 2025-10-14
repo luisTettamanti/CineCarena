@@ -21,19 +21,46 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
+    <!-- jQuery necesario para que funcione select2 -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
     <title>{% block titulo %}Películas{% endblock %}</title>
 </head>
 
 <body>
-    <div class="container-fluid">
+    <div class="container-fluid px-0">
         <header></header>
     </div>
-    <div class="container">
+
+    <nav class="navbar navbar-expand-md sticky-top custom-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'index' %}">CineCarena</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
+                <ul class="navbar-nav text-end">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'peliculaslistaoc5' %}"><b>Películas</b></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><b>Actores</b></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><b>Directores</b></a>
+                    </li>
+                </ul>
+            </div>
+            <div class="compensa-brand d-none d-md-block" style="height: 32px; width: 44px;"></div>
+        </div>
+    </nav>
+
+    <main class="container">
         {% block content %}{% endblock %}
-    </div>
-    <div class="container-fluid">
+    </main>
+
+    <div class="container-fluid px-0">
         <footer></footer>
     </div>
-
 </body>
 </html>
