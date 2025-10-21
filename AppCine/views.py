@@ -3,6 +3,7 @@ from datetime import datetime
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.timezone import now
 
 from AppCine.forms import PeliculaForm, ActorPeliculaFormSet, CategoriaForm, DirectorForm, ActorForm, PeliculaForm2
@@ -17,11 +18,14 @@ from django.db.models import Q
 from django_tables2.views import SingleTableView
 from .tables import PeliculaTable, PeliculaTable2
 
+from django.contrib.auth.views import LoginView, redirect_to_login
+from django.contrib.auth import login, logout, authenticate
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+
 from urllib.parse import urlencode
 
-
 log = logging.getLogger(__name__)
-
 
 # def index(request):
 #     mensaje = f"<html><h1>Bienvenidos a Cine Carena</h1> " \
@@ -673,7 +677,7 @@ class peliculaFormCrear2(CreateView):
             })
 
 
-class PeliculasLista5(SingleTableView):
+class PeliculasLista5(LoginRequiredMixin, SingleTableView):
     model = Pelicula
     table_class = PeliculaTable2
     template_name = "peliculaslistaoc5.html"
@@ -687,11 +691,20 @@ class PeliculasLista5(SingleTableView):
         return qs
 
 
-class peliculaFormModificar3(UpdateView):
+class peliculaFormModificar3(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Pelicula
     form_class = PeliculaForm2
     template_name = 'peliculaForm3.html'
     success_url = reverse_lazy('peliculaslistaoc5')
+    permission_required = 'cinecarena.change_pelicula'
+    raise_exception = False
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            messages.error(self.request, "No tenés permiso para modificar películas.")
+            return redirect('peliculaslistaoc5')
+        # Si no está logueado, al login manteniendo el next
+        return redirect_to_login(self.request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
 
     def get_context_data(self, **kwargs):
         # ya no armamos formset de actores
@@ -744,11 +757,12 @@ class peliculaFormModificar3(UpdateView):
         return super().form_valid(form)
 
 
-class peliculaFormCrear3(CreateView):
+class peliculaFormCrear3(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Pelicula
     form_class = PeliculaForm2
     template_name = 'peliculaForm3.html'
     success_url = reverse_lazy('peliculaslistaoc5')
+    permission_required = 'cinecarena.add_pelicula'
 
     def get_context_data(self, **kwargs):
         # ya no armamos formset de actores
@@ -862,3 +876,31 @@ class ActorCreateHX(CreateView):
                           {"obj": obj,
                            "target_select": self.request.POST.get("target_select")}, status=200)
         return super().form_valid(form)
+
+
+def Logout(request):
+    logout(request)
+    return redirect('/index')
+
+
+def login_view(request):
+    redirect_field_name = 'next'
+    next_url = request.GET.get(redirect_field_name) or request.POST.get(redirect_field_name)
+
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+
+            if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+                return redirect(next_url)
+            return redirect('index')
+        else:
+            messages.error(request, "Usuario o contraseña inválidos.")
+            # opcional: conservar el username en el form
+            return render(request, 'login.html', {'username': username, redirect_field_name: next_url})
+
+    return render(request, 'login.html')

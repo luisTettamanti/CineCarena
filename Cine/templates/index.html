@@ -35,7 +35,13 @@
               </a>
             {% endfor %}
         </div>
-        <a href="{% url 'peliculaslistaoc5' %}">Películas</a>
+        <a href="{% url 'peliculaslistaoc5' %}">Películas</a><br>
+        <a href="{% url 'login' %}">Login
+            {% if user.is_authenticated %}
+                ({{ user }})
+            {% endif %}
+        </a><br>
+        <a href="{% url 'logout' %}">Logout</a>
     {% endblock %}
 </body>
 </html>

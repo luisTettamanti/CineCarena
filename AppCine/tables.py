@@ -123,3 +123,7 @@ class PeliculaTable2(tables.Table):
             "tbody": {"class": "table-group-divider"},  # separador entre grupos (BS5)
         }
         sequence = ("id", "nombre", "director", "anio", "acciones")
+
+
+# { % if perms.cinecarena.change_pelicula %}
+# { % endif %}

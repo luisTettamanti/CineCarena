@@ -46,4 +46,8 @@ urlpatterns = [
     path('categoriaCrear/', views.CategoriaCreateHX.as_view(), name='categorianuevahx'),
     path('directorCrear/', views.DirectorCreateHX.as_view(), name='directornuevohx'),
     path('actorCrear/', views.ActorCreateHX.as_view(), name='actornuevohx'),
+
+    # path('login/', views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.Logout, name='logout'),
     ]

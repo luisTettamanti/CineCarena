@@ -40,9 +40,13 @@
             </button>
             <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
                 <ul class="navbar-nav text-end">
+
+                    {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'peliculaslistaoc5' %}"><b>Películas</b></a>
                     </li>
+                    {% endif %}
+
                     <li class="nav-item">
                         <a class="nav-link" href="#"><b>Actores</b></a>
                     </li>
@@ -54,6 +58,16 @@
             <div class="compensa-brand d-none d-md-block" style="height: 32px; width: 44px;"></div>
         </div>
     </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags }}{% endif %} mt-3" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
 
     <main class="container">
         {% block content %}{% endblock %}
